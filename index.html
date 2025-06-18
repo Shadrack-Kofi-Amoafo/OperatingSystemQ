@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operating System Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f1f1f1;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+
+    <div id="app-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl max-w-lg w-full transform transition-all duration-300">
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-down">📚 Operating System Quiz 📚</h1>
+            <p class="text-lg text-gray-700 mb-8 leading-relaxed animate-fade-in">
+                Test your knowledge on Operating Systems with these challenging quizzes!
+            </p>
+            <button id="start-quiz-button" class="w-full py-4 px-6 bg-green-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 active:scale-95">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Chapter Selection Screen -->
+        <div id="chapter-selection-screen" class="text-center hidden">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 animate-fade-in-down">Choose a Chapter</h2>
+            <div id="chapter-buttons">
+                <!-- Chapter buttons will be injected here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="quiz-title" class="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-grow">
+                    <!-- Quiz title and question count will be injected here -->
+                </h2>
+                <button id="home-button-quiz" class="ml-4 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-sm">
+                    Home
+                </button>
+            </div>
+            <div class="bg-gray-50 p-5 rounded-lg shadow-inner mb-6">
+                <p id="question-text" class="text-xl sm:text-2xl text-gray-800 font-semibold leading-relaxed">
+                    <!-- Question text will be injected here -->
+                </p>
+            </div>
+
+            <div id="options-container" class="options-container">
+                <!-- Answer options will be injected here by JavaScript -->
+            </div>
+
+            <p id="feedback-text" class="text-center text-lg mt-4 font-semibold hidden animate-fade-in">
+                <!-- Feedback (Correct/Incorrect) will be injected here -->
+            </p>
+
+            <button id="next-question-button" class="w-full py-4 px-6 text-xl font-semibold rounded-lg shadow-lg mt-8 transition-all duration-300 transform hover:scale-105 active:scale-95 bg-gray-400 cursor-not-allowed" disabled>
+                Next Question
+            </button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="text-center hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 animate-fade-in-down flex-grow">🎉 Quiz Completed! 🎉</h2>
+                <button id="home-button-results" class="ml-4 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-sm">
+                    Home
+                </button>
+            </div>
+            <p class="text-2xl text-gray-800 mb-6">
+                Your Score: <span id="final-score" class="font-extrabold text-green-600"></span> out of <span id="total-questions-results" class="font-extrabold text-blue-600"></span>
+            </p>
+
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 mt-8">Review Your Answers:</h3>
+            <div id="answer-review-container" class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                <!-- Answer review items will be injected here by JavaScript -->
+            </div>
+
+            <button id="back-to-start-button" class="w-full py-4 px-6 bg-blue-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mt-8">
+                Back to Start
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Quiz Data organized by Chapters
+        const QUIZ_CHAPTERS = {
+            chapter1: {
+                title: "Chapter 1: Introduction to Operating Systems",
+                questions: [
+                    {
+                        question: "What is the primary role of an operating system in relation to computer hardware?",
+                        options: [
+                            "To design and manufacture hardware components.",
+                            "To manage and allocate hardware resources.",
+                            "To solely control I/O devices without user intervention.",
+                            "To optimize utilization of hardware only on mainframe systems."
+                        ],
+                        answer: "To manage and allocate hardware resources."
+                    },
+                    {
+                        question: "Which of the following best defines the 'kernel' of an operating system?",
+                        options: [
+                            "All application programs installed on a computer.",
+                            "System programs that are associated with the operating system but not part of its core.",
+                            "The one program running at all times on the computer.",
+                            "A set of software frameworks that provide additional services to application developers."
+                        ],
+                        answer: "The one program running at all times on the computer."
+                    },
+                    {
+                        question: "What is the function of the 'bootstrap program' during system startup?",
+                        options: [
+                            "To execute user applications directly from ROM.",
+                            "To manage network connections and protocols.",
+                            "To initialize all aspects of the system and load the operating system kernel into memory.",
+                            "To provide middleware services for mobile devices."
+                        ],
+                        answer: "To initialize all aspects of the system and load the operating system kernel into memory."
+                    },
+                    {
+                        question: "An event in a modern operating system is almost always signaled by what two types of occurrences?",
+                        options: [
+                            "A system boot or a user login.",
+                            "An interrupt from hardware or a trap (system call) from software.",
+                            "A program completion or a device becoming idle.",
+                            "Memory allocation or file storage."
+                        ],
+                        answer: "An interrupt from hardware or a trap (system call) from software."
+                    },
+                    {
+                        question: "What is the purpose of the 'mode bit' in a computer system's hardware?",
+                        options: [
+                            "To indicate the current CPU clock speed.",
+                            "To distinguish between operating-system code and user-defined code execution.",
+                            "To manage memory allocation for global variables.",
+                            "To synchronize access to shared memory between CPUs."
+                        ],
+                        answer: "To distinguish between operating-system code and user-defined code execution."
+                    },
+                    {
+                        question: "What happens if a 'privileged instruction' is attempted to be executed in user mode?",
+                        options: [
+                            "The instruction is executed, and a warning is displayed to the user.",
+                            "The hardware executes the instruction normally, but the process is terminated later.",
+                            "The hardware does not execute the instruction and traps it to the operating system.",
+                            "The system automatically switches to kernel mode to execute the instruction."
+                        ],
+                        answer: "The hardware does not execute the instruction and traps it to the operating system."
+                    },
+                    {
+                        question: "How do multiprocessor systems (parallel systems or multicore systems) differ from single-processor systems?",
+                        options: [
+                            "They only have special-purpose processors.",
+                            "They use a single CPU capable of executing only kernel-mode instructions.",
+                            "They have two or more processors in close communication, sharing resources.",
+                            "They are composed of physically separate, heterogeneous systems networked together."
+                        ],
+                        answer: "They have two or more processors in close communication, sharing resources."
+                    },
+                    {
+                        question: "What is the primary benefit of 'multicore' CPU design over multiple chips with single cores?",
+                        options: [
+                            "It eliminates the need for any form of memory management.",
+                            "On-chip communication is slower, but more secure.",
+                            "Faster on-chip communication and significantly less power consumption.",
+                            "It removes all pressure on operating system designers."
+                        ],
+                        answer: "Faster on-chip communication and significantly less power consumption."
+                    },
+                    {
+                        question: "What distinguishes 'blade servers' from traditional multiprocessor systems?",
+                        options: [
+                            "They run all applications on a single, shared operating system instance.",
+                            "Each blade-processor board boots independently and runs its own operating system.",
+                            "They are exclusively used for desktop computing environments.",
+                            "They rely on a boss processor to control all other worker processors."
+                        ],
+                        answer: "Each blade-processor board boots independently and runs its own operating system."
+                    },
+                    {
+                        question: "The main purpose of 'clustering' in computer systems is typically to provide:",
+                        options: [
+                            "Increased CPU speed for single applications.",
+                            "High-availability service, ensuring continued operation despite component failure.",
+                            "Exclusive user interaction through a single terminal.",
+                            "A tightly coupled system with shared direct memory access."
+                        ],
+                        answer: "High-availability service, ensuring continued operation despite component failure."
+                    },
+                    {
+                        question: "In the context of the OS as a 'resource allocator', which resources does it manage?",
+                        options: [
+                            "Only CPU time and memory space.",
+                            "CPU time, memory space, file-storage space, and I/O devices.",
+                            "Only network protocols and display resolutions.",
+                            "User interface themes and desktop backgrounds."
+                        ],
+                        answer: "CPU time, memory space, file-storage space, and I/O devices."
+                    },
+                    {
+                        question: "What is the role of the operating system when viewed as a 'control program'?",
+                        options: [
+                            "To design new algorithms for user applications.",
+                            "To manage the execution of user programs to prevent errors and improper use of the computer.",
+                            "To exclusively control mainframe systems.",
+                            "To provide complex games and business applications."
+                        ],
+                        answer: "To manage the execution of user programs to prevent errors and improper use of the computer."
+                    },
+                    {
+                        question: "What is stored in ROM or EEPROM (firmware) to help a computer start running?",
+                        options: [
+                            "User application data.",
+                            "The initial program, or bootstrap program.",
+                            "Dynamically allocated memory for processes.",
+                            "Temporary data for the process stack."
+                        ],
+                        answer: "The initial program, or bootstrap program."
+                    },
+                    {
+                        question: "After the kernel is loaded and executing, what types of programs might provide additional services outside the kernel at boot time?",
+                        options: [
+                            "Only user-defined scripts.",
+                            "Application programs like web browsers.",
+                            "System programs that become system processes, or system daemons.",
+                            "Only programs stored in game cartridges."
+                        ],
+                        answer: "System programs that become system processes, or system daemons."
+                    },
+                    {
+                        question: "What is an 'interrupt vector' used for?",
+                        options: [
+                            "To store user data files.",
+                            "To provide the address of the interrupt service routine for a unique device number.",
+                            "To manage dynamically allocated memory.",
+                            "To track the program counter of user processes."
+                        ],
+                        answer: "To provide the address of the interrupt service routine for a unique device number."
+                    },
+                    {
+                        question: "Main memory (RAM) is commonly implemented in which semiconductor technology?",
+                        options: [
+                            "Read-Only Memory (ROM).",
+                            "Electrically Erasable Programmable Read-Only Memory (EEPROM).",
+                            "Dynamic Random-Access Memory (DRAM).",
+                            "Solid-State Drives (SSD)."
+                        ],
+                        answer: "Dynamic Random-Access Memory (DRAM)."
+                    },
+                    {
+                        question: "Why are static programs like the bootstrap program typically stored in ROM?",
+                        options: [
+                            "Because ROM can be changed frequently.",
+                            "Because ROM is the only type of memory accessible to the CPU.",
+                            "Because ROM cannot be changed, ensuring the program's integrity.",
+                            "Because ROM provides dynamic allocation for temporary data."
+                        ],
+                        answer: "Because ROM cannot be changed, ensuring the program's integrity."
+                    },
+                    {
+                        question: "What is a key difference in functionality between a single-processor system's main CPU and its special-purpose processors?",
+                        options: [
+                            "Special-purpose processors run user processes; the main CPU does not.",
+                            "The main CPU runs a general-purpose instruction set including user processes; special-purpose processors do not run user processes.",
+                            "Special-purpose processors always operate autonomously without OS management.",
+                            "The main CPU focuses solely on I/O, while special-purpose processors handle all computation."
+                        ],
+                        answer: "The main CPU runs a general-purpose instruction set including user processes; special-purpose processors do not run user processes."
+                    },
+                    {
+                        question: "What is 'graceful degradation' in the context of computer system reliability?",
+                        options: [
+                            "The complete shutdown of a system upon any component failure.",
+                            "The ability to continue providing service proportional to the level of surviving hardware.",
+                            "A system that can suffer a failure of any single component and still continue operation fully.",
+                            "A method to reduce CPU utilization during system failures."
+                        ],
+                        answer: "The ability to continue providing service proportional to the level of surviving hardware."
+                    },
+                    {
+                        question: "What type of multiprocessing involves a 'boss processor' controlling the system and allocating work to 'worker processors'?",
+                        options: [
+                            "Symmetric multiprocessing (SMP).",
+                            "Parallel multiprocessing.",
+                            "Asymmetric multiprocessing.",
+                            "Distributed multiprocessing."
+                        ],
+                        answer: "Asymmetric multiprocessing."
+                    },
+                    {
+                        question: "What is the main characteristic of 'symmetric multiprocessing (SMP)' systems?",
+                        options: [
+                            "Each processor is assigned a specific, fixed task.",
+                            "Only one processor performs all tasks within the operating system.",
+                            "All processors are peers, and each performs all tasks within the operating system.",
+                            "Processors only communicate when one fails."
+                        ],
+                        answer: "All processors are peers, and each performs all tasks within the operating system."
+                    },
+                    {
+                        question: "What is the primary reason for the increased efficiency of multicore systems over multiple chips with single cores?",
+                        options: [
+                            "They consume more power.",
+                            "On-chip communication is slower, but more secure.",
+                            "Faster on-chip communication and significantly less power consumption.",
+                            "It removes all pressure on operating system designers."
+                        ],
+                        answer: "Faster on-chip communication and significantly less power consumption."
+                    },
+                    {
+                        question: "What is a 'blade server'?",
+                        options: [
+                            "A traditional desktop computer with enhanced processing power.",
+                            "A single powerful server that manages all network traffic.",
+                            "Multiple processor boards, I/O boards, and networking boards placed in the same chassis.",
+                            "A system where each processor requires its own separate physical network connection."
+                        ],
+                        answer: "Multiple processor boards, I/O boards, and networking boards placed in the same chassis."
+                    },
+                    {
+                        question: "What type of coupling describes clustered systems?",
+                        options: [
+                            "Tightly coupled.",
+                            "Loosely coupled.",
+                            "Directly coupled.",
+                            "Inherently coupled."
+                        ],
+                        answer: "Loosely coupled."
+                    },
+                    {
+                        question: "What is the main goal of using clustering for 'high-availability service'?",
+                        options: [
+                            "Increased CPU speed for single applications.",
+                            "High-availability service, ensuring continued operation despite component failure.",
+                            "Exclusive user interaction through a single terminal.",
+                            "A tightly coupled system with shared direct memory access."
+                        ],
+                        answer: "High-availability service, ensuring continued operation despite component failure."
+                    },
+                    {
+                        question: "In asymmetric clustering, what is the role of the 'hot-standby' machine?",
+                        options: [
+                            "It actively runs applications in parallel with the main server.",
+                            "It only processes I/O requests from connected clients.",
+                            "It continuously monitors the active server and takes over if it fails.",
+                            "It provides additional computational power for high-performance tasks."
+                        ],
+                        answer: "It continuously monitors the active server and takes over if it fails."
+                    },
+                    {
+                        question: "Why is symmetric clustering considered more efficient than asymmetric clustering?",
+                        options: [
+                            "It uses less hardware overall.",
+                            "It requires fewer applications to be available to run.",
+                            "It utilizes all available hardware by having multiple hosts running applications and monitoring each other.",
+                            "It removes the need for any form of failure detection."
+                        ],
+                        answer: "It utilizes all available hardware by having multiple hosts running applications and monitoring each other."
+                    },
+                    {
+                        question: "What technique is essential for an application to leverage a cluster for 'high-performance computing'?",
+                        options: [
+                            "Virtualization, to create isolated environments.",
+                            "Batch processing, to queue up tasks sequentially.",
+                            "Parallelization, to divide a program into components that run concurrently.",
+                            "Serialization, to ensure single-threaded execution."
+                        ],
+                        answer: "Parallelization, to divide a program into components that run concurrently."
+                    },
+                    {
+                        question: "What is the challenge faced by most operating systems when implementing 'parallel clusters' for simultaneous data access?",
+                        options: [
+                            "Lack of high-speed network interconnects.",
+                            "Inability to run applications concurrently.",
+                            "Lack of support for simultaneous data access by multiple hosts on shared storage.",
+                            "Difficulty in integrating different hardware vendors."
+                        ],
+                        answer: "Lack of support for simultaneous data access by multiple hosts on shared storage."
+                    },
+                    {
+                        question: "What is a 'distributed system'?",
+                        options: [
+                            "A single computer system with multiple CPU cores.",
+                            "A collection of physically separate, networked computer systems providing shared resource access.",
+                            "A system where all applications run on a centralized server.",
+                            "A system exclusively used for offline data processing."
+                        ],
+                        answer: "A collection of physically separate, networked computer systems providing shared resource access."
+                    },
+                    // New Fill-in-the-Blank style questions (presented as multiple choice)
+                    {
+                        question: "Fill in the blank: Mainframe operating systems are designed primarily to optimize ___________ of hardware.",
+                        options: [
+                            "convenience",
+                            "user interface",
+                            "utilization",
+                            "complexity"
+                        ],
+                        answer: "utilization"
+                    },
+                    {
+                        question: "Fill in the blank: The operating system is the one program running at all times on the computer—usually called the __________.",
+                        options: [
+                            "firmware",
+                            "daemon",
+                            "kernel",
+                            "application"
+                        ],
+                        answer: "kernel"
+                    },
+                    {
+                        question: "Fill in the blank: The initial program a computer runs when powered up or rebooted is called the __________ program.",
+                        options: [
+                            "system call",
+                            "bootloader",
+                            "application",
+                            "bootstrap"
+                        ],
+                        answer: "bootstrap"
+                    },
+                    {
+                        question: "Fill in the blank: Hardware may trigger an interrupt at any time by sending a signal to the CPU, usually by way of the ___________.",
+                        options: [
+                            "peripheral device",
+                            "system bus",
+                            "memory controller",
+                            "program counter"
+                        ],
+                        answer: "system bus"
+                    },
+                    {
+                        question: "Fill in the blank: A bit, called the ___________, is added to the hardware of the computer to indicate the current mode: kernel (0) or user (1).",
+                        options: [
+                            "status bit",
+                            "control bit",
+                            "mode bit",
+                            "privileged bit"
+                        ],
+                        answer: "mode bit"
+                    },
+                    {
+                        question: "Fill in the blank: The hardware allows ___________ instructions to be executed only in kernel mode.",
+                        options: [
+                            "user",
+                            "basic",
+                            "privileged",
+                            "system call"
+                        ],
+                        answer: "privileged"
+                    },
+                    {
+                        question: "Fill in the blank: In ___________ multiprocessing, each processor performs all tasks within the operating system.",
+                        options: [
+                            "asymmetric",
+                            "symmetric",
+                            "clustered",
+                            "distributed"
+                        ],
+                        answer: "symmetric"
+                    },
+                    {
+                        question: "Fill in the blank: Multicore systems can be more efficient because ___________ communication is faster than between-chip communication.",
+                        options: [
+                            "network",
+                            "on-chip",
+                            "bus",
+                            "external"
+                        ],
+                        answer: "on-chip"
+                    },
+                    {
+                        question: "Fill in the blank: In asymmetric clustering, one machine is in ___________ mode while the other is running the applications.",
+                        options: [
+                            "active",
+                            "running",
+                            "hot-standby",
+                            "offline"
+                        ],
+                        answer: "hot-standby"
+                    },
+                    {
+                        question: "Fill in the blank: To provide high-performance computing, an application must have been written specifically to take advantage of the cluster using a technique known as __________.",
+                        options: [
+                            "virtualization",
+                            "serialization",
+                            "parallelization",
+                            "emulation"
+                        ],
+                        answer: "parallelization"
+                    }
+                ]
+            },
+            chapter2: {
+                title: "Chapter 2: Operating System Structures",
+                questions: [
+                    {
+                        question: "What is the primary purpose of operating system services, as stated in the text?",
+                        options: [
+                            "To make computer hardware more affordable.",
+                            "To simplify the programming task for developers.",
+                            "To directly execute all user programs.",
+                            "To design new computer architectures."
+                        ],
+                        answer: "To simplify the programming task for developers."
+                    },
+                    {
+                        question: "Which two fundamental approaches for user interaction with the operating system are discussed?",
+                        options: [
+                            "Keyboard-only and voice-command interfaces.",
+                            "Hardware-level and firmware-level interfaces.",
+                            "Command-line interface and graphical user interface.",
+                            "Network-based and standalone interfaces."
+                        ],
+                        answer: "Command-line interface and graphical user interface."
+                    },
+                    {
+                        question: "On systems like UNIX and Linux, what are multiple command interpreters often known as?",
+                        options: [
+                            "Kernels.",
+                            "Daemons.",
+                            "Shells.",
+                            "APIs."
+                        ],
+                        answer: "Shells."
+                    },
+                    {
+                        question: "In one approach to command interpretation (like MS-DOS and some UNIX shells), how does the command interpreter handle a command to delete a file?",
+                        options: [
+                            "It directly deletes the file without external calls.",
+                            "It interprets the command, sets up parameters, and makes an appropriate system call.",
+                            "It loads a separate system program named after the command to execute it.",
+                            "It sends the command to the hardware for direct execution."
+                        ],
+                        answer: "It interprets the command, sets up parameters, and makes an appropriate system call."
+                    },
+                    {
+                        question: "In an alternative approach (used by UNIX for `rm file.txt`), how does the command interpreter execute `rm file.txt`?",
+                        options: [
+                            "It has built-in code for the `rm` command.",
+                            "It directly performs the file deletion itself.",
+                            "It identifies `rm` as a file to be loaded into memory and executed with `file.txt` as a parameter.",
+                            "It compiles `rm` into executable code before running."
+                        ],
+                        answer: "It identifies `rm` as a file to be loaded into memory and executed with `file.txt` as a parameter."
+                    },
+                    {
+                        question: "GUI interfaces are characterized by a desktop metaphor using which input device primarily?",
+                        options: [
+                            "Keyboard.",
+                            "Touchscreen.",
+                            "Mouse.",
+                            "Joystick."
+                        ],
+                        answer: "Mouse."
+                    },
+                    {
+                        question: "Which company's computers helped make graphical interfaces more widespread in the 1980s?",
+                        options: [
+                            "Microsoft.",
+                            "IBM.",
+                            "Apple Macintosh.",
+                            "Xerox PARC."
+                        ],
+                        answer: "Apple Macintosh."
+                    },
+                    {
+                        question: "How do smartphones and handheld tablet computers typically interact with users, due to the impracticality of a mouse?",
+                        options: [
+                            "Via physical keyboards only.",
+                            "Through command-line interfaces.",
+                            "Using touchscreen gestures.",
+                            "By voice commands exclusively."
+                        ],
+                        answer: "Using touchscreen gestures."
+                    },
+                    {
+                        question: "Which open-source GUI desktop environments are mentioned as running on Linux and various UNIX systems?",
+                        options: [
+                            "Windows Aero and Mac OS Aqua.",
+                            "Common Desktop Environment (CDE) and X-Windows.",
+                            "K Desktop Environment (KDE) and GNOME desktop.",
+                            "Solaris CDE and IBM AIX GUI."
+                        ],
+                        answer: "K Desktop Environment (KDE) and GNOME desktop."
+                    },
+                    {
+                        question: "For whom is the command-line interface often more efficient, offering faster access to activities?",
+                        options: [
+                            "Most Windows users.",
+                            "Casual internet browsers.",
+                            "System administrators and power users.",
+                            "Novice programmers."
+                        ],
+                        answer: "System administrators and power users."
+                    },
+                    {
+                        question: "Why do command-line interfaces usually make repetitive tasks easier?",
+                        options: [
+                            "Because they have complex graphical tools.",
+                            "Because they have their own programmability (e.g., shell scripts).",
+                            "Because they are always faster to type commands.",
+                            "Because they require less memory."
+                        ],
+                        answer: "Because they have their own programmability (e.g., shell scripts)."
+                    },
+                    {
+                        question: "What are recorded command-line steps run like a program, interpreted by the command-line interface, called?",
+                        options: [
+                            "Executable binaries.",
+                            "Compiled scripts.",
+                            "System calls.",
+                            "Shell scripts."
+                        ],
+                        answer: "Shell scripts."
+                    },
+                    {
+                        question: "System calls provide an interface to the services made available by an operating system. These calls are generally available as routines written in which programming languages?",
+                        options: [
+                            "Python and Java.",
+                            "C and C++.",
+                            "Assembly language only.",
+                            "HTML and CSS."
+                        ],
+                        answer: "C and C++."
+                    },
+                    {
+                        question: "Why might certain low-level tasks requiring direct hardware access be written using assembly-language instructions?",
+                        options: [
+                            "Because C/C++ cannot interact with hardware at all.",
+                            "Because it is always simpler than high-level languages.",
+                            "Because assembly language allows direct hardware access, which high-level languages might not facilitate easily.",
+                            "Because assembly language is faster for all programming tasks."
+                        ],
+                        answer: "Because assembly language allows direct hardware access, which high-level languages might not facilitate easily."
+                    },
+                    {
+                        question: "What typically happens when an application programmer designs programs using an Application Programming Interface (API)?",
+                        options: [
+                            "The programmer directly writes system calls.",
+                            "The API specifies functions that are available, with functions invoking actual system calls behind the scenes.",
+                            "The API bypasses the operating system entirely.",
+                            "The API compiles the program directly into machine code without OS involvement."
+                        ],
+                        answer: "The API specifies functions that are available, with functions invoking actual system calls behind the scenes."
+                    },
+                    {
+                        question: "Which of the following are listed as three of the most common APIs available to application programmers?",
+                        options: [
+                            "Google API, Apple API, Linux API.",
+                            "Windows API, POSIX API, Java API.",
+                            "UNIX API, C++ API, Python API.",
+                            "Hardware API, Software API, Network API."
+                        ],
+                        answer: "Windows API, POSIX API, Java API."
+                    },
+                    {
+                        question: "What is the library of code provided by the operating system for programmers to access an API (e.g., for UNIX/Linux C programs)?",
+                        options: [
+                            "`kernel.lib`.",
+                            "`api.dll`.",
+                            "`libc`.",
+                            "`syslib`."
+                        ],
+                        answer: "`libc`."
+                    },
+                    {
+                        question: "What is typically associated with each system call, allowing the system-call interface to maintain a table for lookup?",
+                        options: [
+                            "A unique string identifier.",
+                            "A number.",
+                            "A memory address.",
+                            "A file name."
+                        ],
+                        answer: "A number."
+                    },
+                    {
+                        question: "What are the three general methods used to pass parameters to the operating system for system calls?",
+                        options: [
+                            "In files, via network, through global variables.",
+                            "In registers, in a block/table in memory, or pushed onto the stack.",
+                            "By user input, through environment variables, in hidden directories.",
+                            "Directly to the kernel, via BIOS, through interrupt vectors."
+                        ],
+                        answer: "In registers, in a block/table in memory, or pushed onto the stack."
+                    },
+                    {
+                        question: "Into which of the following six major categories can system calls be roughly grouped?",
+                        options: [
+                            "Hardware control, network setup, graphics rendering, security management, database access, print services.",
+                            "Process control, file manipulation, device manipulation, information maintenance, communications, and protection.",
+                            "User interface, system utilities, kernel modules, driver development, application services, middleware.",
+                            "Data structures, memory allocation, CPU scheduling, I/O handling, file systems, security policies."
+                        ],
+                        answer: "Process control, file manipulation, device manipulation, information maintenance, communications, and protection."
+                    },
+                    {
+                        question: "What are system programs also known as, and what environment do they provide?",
+                        options: [
+                            "Application programs; a user interaction environment.",
+                            "System daemons; a boot-time execution environment.",
+                            "System utilities; a convenient environment for program development and execution.",
+                            "Kernel modules; a hardware control environment."
+                        ],
+                        answer: "System utilities; a convenient environment for program development and execution."
+                    },
+                    {
+                        question: "Which category of system programs is responsible for creating, deleting, copying, renaming, printing, dumping, and listing files and directories?",
+                        options: [
+                            "Status information.",
+                            "File modification.",
+                            "File management.",
+                            "Programming-language support."
+                        ],
+                        answer: "File management."
+                    },
+                    {
+                        question: "What kind of information do 'Status information' system programs provide?",
+                        options: [
+                            "Only detailed debugging logs.",
+                            "Date, time, available memory/disk space, number of users, performance, logging, and debugging.",
+                            "Source code for system utilities.",
+                            "Only configuration settings from the registry."
+                        ],
+                        answer: "Date, time, available memory/disk space, number of users, performance, logging, and debugging."
+                    },
+                    {
+                        question: "What are compilers, assemblers, debuggers, and interpreters examples of within system programs?",
+                        options: [
+                            "File modification tools.",
+                            "Communications programs.",
+                            "Programming-language support.",
+                            "Program loading and execution tools."
+                        ],
+                        answer: "Programming-language support."
+                    },
+                    {
+                        question: "Which category of system programs provides mechanisms for creating virtual connections among processes, users, and computer systems (e.g., sending messages, browsing web pages)?",
+                        options: [
+                            "File management.",
+                            "Program loading and execution.",
+                            "Communications.",
+                            "Background services."
+                        ],
+                        answer: "Communications."
+                    },
+                    {
+                        question: "At the highest level, what two factors primarily affect system design?",
+                        options: [
+                            "CPU speed and memory size.",
+                            "Choice of hardware and type of system (e.g., batch, time sharing, single/multiuser).",
+                            "Programming language and development team size.",
+                            "User interface complexity and security protocols."
+                        ],
+                        answer: "Choice of hardware and type of system (e.g., batch, time sharing, single/multiuser)."
+                    },
+                    {
+                        question: "What are the two basic groups into which operating system design requirements can be divided?",
+                        options: [
+                            "Hardware requirements and software requirements.",
+                            "Convenience goals and efficiency goals.",
+                            "User goals and system goals.",
+                            "Performance goals and reliability goals."
+                        ],
+                        answer: "User goals and system goals."
+                    },
+                    {
+                        question: "From the users' perspective, what are some desired properties in a system, though vague in specification?",
+                        options: [
+                            "Complex, insecure, slow, difficult to learn.",
+                            "Convenient to use, easy to learn and use, reliable, safe, and fast.",
+                            "Difficult to implement, hard to maintain, inflexible.",
+                            "High resource utilization, minimal user interaction."
+                        ],
+                        answer: "Convenient to use, easy to learn and use, reliable, safe, and fast."
+                    },
+                    {
+                        question: "From the perspective of those who design, create, maintain, and operate the system, what are some desired properties?",
+                        options: [
+                            "Expensive, rigid, error-prone, inefficient.",
+                            "Hard to design, difficult to implement, challenging to maintain.",
+                            "Easy to design, implement, and maintain; flexible, reliable, error free, and efficient.",
+                            "Solely focused on user convenience, ignoring system performance."
+                        ],
+                        answer: "Easy to design, implement, and maintain; flexible, reliable, error free, and efficient."
+                    },
+                    {
+                        question: "Fill in the blank: The important principle of system design is the separation of ___________ from mechanism.",
+                        options: [
+                            "hardware",
+                            "software",
+                            "policy",
+                            "user"
+                        ],
+                        answer: "policy"
+                    },
+                    {
+                        question: "Fill in the blank: ___________ determine how to do something, while policies determine what will be done.",
+                        options: [
+                            "Goals",
+                            "Mechanisms",
+                            "Programs",
+                            "Interfaces"
+                        ],
+                        answer: "Mechanisms"
+                    },
+                    {
+                        question: "Fill in the blank: Microkernel-based operating systems take the separation of mechanism and policy to one extreme by implementing a basic set of ___________ building blocks.",
+                        options: [
+                            "complex",
+                            "primitive",
+                            "dynamic",
+                            "advanced"
+                        ],
+                        answer: "primitive"
+                    },
+                    {
+                        question: "Fill in the blank: If a process fails, the operating system can take a ___________—a capture of the memory of the process—and store it in a file for later analysis.",
+                        options: [
+                            "log file",
+                            "core dump",
+                            "trace listing",
+                            "registry entry"
+                        ],
+                        answer: "core dump"
+                    },
+                    {
+                        question: "Fill in the blank: A failure in the kernel is called a ___________.",
+                        options: [
+                            "bug",
+                            "error",
+                            "crash",
+                            "halt"
+                        ],
+                        answer: "crash"
+                    },
+                    {
+                        question: "Fill in the blank: When a kernel detects an unrecoverable error, it commonly saves its memory state to a section of disk that contains no ___________.",
+                        options: [
+                            "operating system",
+                            "user data",
+                            "file system",
+                            "application programs"
+                        ],
+                        answer: "file system"
+                    },
+                    {
+                        question: "Fill in the blank: Performance tuning seeks to improve performance by removing processing ___________.",
+                        options: [
+                            "features",
+                            "bottlenecks",
+                            "errors",
+                            "limitations"
+                        ],
+                        answer: "bottlenecks"
+                    },
+                    {
+                        question: "Fill in the blank: To identify bottlenecks, the operating system must have some means of computing and displaying measures of system behavior, often by producing ___________ of system behavior.",
+                        options: [
+                            "summary reports",
+                            "trace listings",
+                            "hardware logs",
+                            "user preferences"
+                        ],
+                        answer: "trace listings"
+                    },
+                    {
+                        question: "Fill in the blank: These traces can be run as input for a ___________ of a suggested improved system.",
+                        options: [
+                            "deployment",
+                            "update",
+                            "installation",
+                            "simulation"
+                        ],
+                        answer: "simulation"
+                    },
+                    {
+                        question: "Fill in the blank: Traces can also help people to find ___________ in operating-system behavior.",
+                        options: [
+                            "features",
+                            "improvements",
+                            "errors",
+                            "updates"
+                        ],
+                        answer: "errors"
+                    },
+                    {
+                        question: "Fill in the blank: The main function of the command interpreter is to get and ___________ the next user-specified command.",
+                        options: [
+                            "store",
+                            "validate",
+                            "execute",
+                            "interpret"
+                        ],
+                        answer: "execute"
+                    }
+                ]
+            },
+            chapter2_part2: {
+                title: "Chapter 2 Part 2: Process Management",
+                questions: [
+                    {
+                        question: "Informally, what is a process?",
+                        options: [
+                            "A program on disk",
+                            "A program in execution",
+                            "A collection of files",
+                            "A hardware component"
+                        ],
+                        answer: "A program in execution"
+                    },
+                    {
+                        question: "Which component represents a process's 'current activity'?",
+                        options: [
+                            "Global variables",
+                            "Program counter and processor registers",
+                            "The process stack only",
+                            "The data section only"
+                        ],
+                        answer: "Program counter and processor registers"
+                    },
+                    {
+                        question: "What is the 'new' state of a process?",
+                        options: [
+                            "Waiting for I/O",
+                            "Being created",
+                            "Executing on CPU",
+                            "Finished execution"
+                        ],
+                        answer: "Being created"
+                    },
+                    {
+                        question: "What is the 'running' state of a process?",
+                        options: [
+                            "Instructions are being executed.",
+                            "The process is waiting for an I/O completion.",
+                            "The process is waiting to be assigned to a processor.",
+                            "The process has finished execution."
+                        ],
+                        answer: "Instructions are being executed."
+                    },
+                    {
+                        question: "In which state is a process waiting for some event to occur (e.g., I/O completion or signal reception)?",
+                        options: [
+                            "New",
+                            "Running",
+                            "Waiting",
+                            "Ready"
+                        ],
+                        answer: "Waiting"
+                    },
+                    {
+                        question: "A process is in the 'ready' state when it is...",
+                        options: [
+                            "being created.",
+                            "executing instructions.",
+                            "waiting for an event.",
+                            "waiting to be assigned to a processor."
+                        ],
+                        answer: "waiting to be assigned to a processor."
+                    },
+                    {
+                        question: "What state describes a process that has finished execution?",
+                        options: [
+                            "New",
+                            "Running",
+                            "Waiting",
+                            "Terminated"
+                        ],
+                        answer: "Terminated"
+                    },
+                    {
+                        question: "What is a 'Process Control Block (PCB)' also known as?",
+                        options: [
+                            "Program Counter Block",
+                            "Task Control Block",
+                            "Process Execution Buffer",
+                            "Thread Management Unit"
+                        ],
+                        answer: "Task Control Block"
+                    },
+                    {
+                        question: "What concept has been extended in most modern operating systems to allow a process to have multiple threads of execution?",
+                        options: [
+                            "The single-tasking concept.",
+                            "The batch processing concept.",
+                            "The process concept.",
+                            "The hardware interrupt concept."
+                        ],
+                        answer: "The process concept."
+                    },
+                    {
+                        question: "What is the benefit of having multiple threads of execution within a single process, especially on multicore systems?",
+                        options: [
+                            "It simplifies the debugging process.",
+                            "It allows the process to perform only one task at a time.",
+                            "It allows multiple threads to run in parallel.",
+                            "It reduces the need for memory management."
+                        ],
+                        answer: "It allows multiple threads to run in parallel."
+                    },
+                    {
+                        question: "All processes in the system are initially put into which queue?",
+                        options: [
+                            "Ready queue",
+                            "Device queue",
+                            "Job queue",
+                            "Execution queue"
+                        ],
+                        answer: "Job queue"
+                    },
+                    {
+                        question: "Processes residing in main memory and ready to execute are kept on a list called the __________.",
+                        options: [
+                            "device queue",
+                            "job queue",
+                            "ready queue",
+                            "waiting queue"
+                        ],
+                        answer: "ready queue"
+                    },
+                    {
+                        question: "When a process makes an I/O request to a shared device (like a disk) and the device is busy, what happens to the process?",
+                        options: [
+                            "It is terminated immediately.",
+                            "It is put back into the ready queue.",
+                            "It is placed in a device queue.",
+                            "It continues executing on the CPU."
+                        ],
+                        answer: "It is placed in a device queue."
+                    },
+                    {
+                        question: "In a queueing diagram, what do the rectangular boxes represent?",
+                        options: [
+                            "Resources",
+                            "Processes",
+                            "Queues",
+                            "CPUs"
+                        ],
+                        answer: "Queues"
+                    },
+                    {
+                        question: "What is the state of a process that is waiting to be assigned to a processor?",
+                        options: [
+                            "Running",
+                            "Waiting",
+                            "Ready",
+                            "New"
+                        ],
+                        answer: "Ready"
+                    },
+                    {
+                        question: "When a process is removed forcibly from the CPU (e.g., by an interrupt), where is it typically put back?",
+                        options: [
+                            "Terminated state",
+                            "I/O queue",
+                            "Ready queue",
+                            "New queue"
+                        ],
+                        answer: "Ready queue"
+                    },
+                    {
+                        question: "In a batch system, processes submitted that cannot be executed immediately are spooled to a mass-storage device where they are kept for later execution. What is this pool called?",
+                        options: [
+                            "Ready pool",
+                            "Device pool",
+                            "Job pool",
+                            "Memory pool"
+                        ],
+                        answer: "Job pool"
+                    },
+                    {
+                        question: "Which scheduler selects processes from the job pool and loads them into memory for execution?",
+                        options: [
+                            "Short-term scheduler",
+                            "CPU scheduler",
+                            "Long-term scheduler",
+                            "Medium-term scheduler"
+                        ],
+                        answer: "Long-term scheduler"
+                    },
+                    {
+                        question: "Which scheduler selects from among the processes that are ready to execute and allocates the CPU?",
+                        options: [
+                            "Long-term scheduler",
+                            "Job scheduler",
+                            "Short-term scheduler",
+                            "Medium-term scheduler"
+                        ],
+                        answer: "Short-term scheduler"
+                    },
+                    {
+                        question: "What is the primary distinction between the short-term and long-term schedulers?",
+                        options: [
+                            "The type of processes they handle.",
+                            "Their frequency of execution.",
+                            "The amount of memory they manage.",
+                            "Their role in I/O operations."
+                        ],
+                        answer: "Their frequency of execution."
+                    },
+                    {
+                        question: "Why must the short-term scheduler be fast?",
+                        options: [
+                            "Because it handles all I/O requests.",
+                            "Because it executes much less frequently.",
+                            "Because a process may execute for only a few milliseconds before waiting for an I/O request.",
+                            "Because it controls the degree of multiprogramming."
+                        ],
+                        answer: "Because a process may execute for only a few milliseconds before waiting for an I/O request."
+                    },
+                    {
+                        question: "What does the long-term scheduler control?",
+                        options: [
+                            "The speed of CPU execution.",
+                            "The number of times an I/O request is made.",
+                            "The degree of multiprogramming (the number of processes in memory).",
+                            "The priority of individual threads."
+                        ],
+                        answer: "The degree of multiprogramming (the number of processes in memory)."
+                    },
+                    {
+                        question: "If the degree of multiprogramming is stable, what must be true about the average rate of process creation and departure?",
+                        options: [
+                            "Creation rate must be greater than departure rate.",
+                            "Departure rate must be greater than creation rate.",
+                            "They must be equal.",
+                            "They are unrelated."
+                        ],
+                        answer: "They must be equal."
+                    },
+                    {
+                        question: "What characterizes an 'I/O-bound process'?",
+                        options: [
+                            "It spends more time doing computations than I/O.",
+                            "It generates I/O requests frequently.",
+                            "It generates I/O requests infrequently.",
+                            "It is primarily concerned with CPU utilization."
+                        ],
+                        answer: "It generates I/O requests frequently."
+                    },
+                    {
+                        question: "What characterizes a 'CPU-bound process'?",
+                        options: [
+                            "It spends more time doing I/O than computations.",
+                            "It generates I/O requests frequently.",
+                            "It generates I/O requests infrequently, using more of its time doing computations.",
+                            "It is solely concerned with device queues."
+                        ],
+                        answer: "It generates I/O requests infrequently, using more of its time doing computations."
+                    },
+                    {
+                        question: "What kind of process mix should the long-term scheduler aim for to achieve the best system performance?",
+                        options: [
+                            "All I/O-bound processes.",
+                            "All CPU-bound processes.",
+                            "A combination of CPU-bound and I/O-bound processes.",
+                            "Only processes with very high priority."
+                        ],
+                        answer: "A combination of CPU-bound and I/O-bound processes."
+                    },
+                    {
+                        question: "In time-sharing systems like UNIX and Microsoft Windows, why is the long-term scheduler often absent or minimal?",
+                        options: [
+                            "Because they always have an abundance of memory.",
+                            "Because all processes are always CPU-bound.",
+                            "Because new processes are simply put in memory for the short-term scheduler, and stability depends on physical limits or user behavior.",
+                            "Because I/O devices are rarely used."
+                        ],
+                        answer: "Because new processes are simply put in memory for the short-term scheduler, and stability depends on physical limits or user behavior."
+                    },
+                    {
+                        question: "What is the key idea behind a 'medium-term scheduler'?",
+                        options: [
+                            "To always keep all processes in memory.",
+                            "To permanently remove processes from the system.",
+                            "To sometimes remove a process from memory (swapping out) and later reintroduce it (swapping in).",
+                            "To only schedule processes that are I/O-bound."
+                        ],
+                        answer: "To sometimes remove a process from memory (swapping out) and later reintroduce it (swapping in)."
+                    },
+                    {
+                        question: "What is the purpose of 'swapping' (in/out) in the context of a medium-term scheduler?",
+                        options: [
+                            "To increase the degree of multiprogramming.",
+                            "To reduce the degree of multiprogramming and later reintroduce a process.",
+                            "To permanently terminate a process.",
+                            "To move processes directly from the job pool to the ready queue."
+                        ],
+                        answer: "To reduce the degree of multiprogramming and later reintroduce a process."
+                    },
+                    {
+                        question: "What is a 'context switch'?",
+                        options: [
+                            "The process of loading a new application into memory.",
+                            "Switching the CPU to another process by performing a state save of the current process and a state restore of a different process.",
+                            "A hardware interrupt that signals an error.",
+                            "The act of creating a new child process."
+                        ],
+                        answer: "Switching the CPU to another process by performing a state save of the current process and a state restore of a different process."
+                    },
+                    {
+                        question: "Fill in the blank: A process is a program in __________.",
+                        options: [
+                            "storage",
+                            "development",
+                            "execution",
+                            "compilation"
+                        ],
+                        answer: "execution"
+                    },
+                    {
+                        question: "Fill in the blank: The current activity of a process is represented by the value of the program counter and the contents of the processor’s __________.",
+                        options: [
+                            "cache",
+                            "registers",
+                            "hard drive",
+                            "RAM"
+                        ],
+                        answer: "registers"
+                    },
+                    {
+                        question: "Fill in the blank: A program is a passive entity, such as a file containing a list of instructions stored on disk (often called an ___________ file).",
+                        options: [
+                            "source",
+                            "text",
+                            "executable",
+                            "data"
+                        ],
+                        answer: "executable"
+                    },
+                    {
+                        question: "Fill in the blank: Each process is represented in the operating system by a Process Control Block (PCB), also called a __________.",
+                        options: [
+                            "Program Control Block",
+                            "System Information Block",
+                            "Task Control Block",
+                            "Resource Allocation Block"
+                        ],
+                        answer: "Task Control Block"
+                    },
+                    {
+                        question: "Fill in the blank: Most modern operating systems have extended the process concept to allow a process to have multiple ___________ of execution.",
+                        options: [
+                            "programs",
+                            "tasks",
+                            "threads",
+                            "cores"
+                        ],
+                        answer: "threads"
+                    },
+                    {
+                        question: "Fill in the blank: The processes that are residing in main memory and are ready and waiting to execute are kept on a list called the __________ queue.",
+                        options: [
+                            "job",
+                            "device",
+                            "ready",
+                            "waiting"
+                        ],
+                        answer: "ready"
+                    },
+                    {
+                        question: "Fill in the blank: The long-term scheduler controls the __________ of multiprogramming.",
+                        options: [
+                            "speed",
+                            "frequency",
+                            "degree",
+                            "efficiency"
+                        ],
+                        answer: "degree"
+                    },
+                    {
+                        question: "Fill in the blank: An I/O-bound process is one that spends more of its time doing I/O than it spends doing __________.",
+                        options: [
+                            "sleeping",
+                            "waiting",
+                            "context switching",
+                            "computation"
+                        ],
+                        answer: "computation"
+                    },
+                    {
+                        question: "Fill in the blank: Switching the CPU to another process requires performing a state save of the current process and a state restore of a different process. This task is known as a __________.",
+                        options: [
+                            "process migration",
+                            "thread swap",
+                            "context switch",
+                            "program restart"
+                        ],
+                        answer: "context switch"
+                    },
+                    {
+                        question: "Fill in the blank: Most operating systems (including UNIX, Linux, and Windows) identify processes according to a unique process ___________ (or pid).",
+                        options: [
+                            "name",
+                            "identifier",
+                            "address",
+                            "location"
+                        ],
+                        answer: "identifier"
+                    }
+                ]
+            }
+        };
+
+        // Global state variables
+        let currentScreen = 'welcome';
+        let currentChapterKey = null;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let feedback = null;
+        let answeredQuestions = [];
+        let activeQuizQuestions = [];
+
+        // DOM Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const chapterSelectionScreen = document.getElementById('chapter-selection-screen');
+        const chapterButtonsContainer = document.getElementById('chapter-buttons');
+        const quizScreen = document.getElementById('quiz-screen');
+        const quizTitle = document.getElementById('quiz-title');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextQuestionButton = document.getElementById('next-question-button');
+        const resultsScreen = document.getElementById('results-screen');
+        const finalScore = document.getElementById('final-score');
+        const totalQuestionsResults = document.getElementById('total-questions-results');
+        const answerReviewContainer = document.getElementById('answer-review-container');
+        const startQuizButton = document.getElementById('start-quiz-button');
+        const backToStartButton = document.getElementById('back-to-start-button');
+        const homeButtonQuiz = document.getElementById('home-button-quiz');
+        const homeButtonResults = document.getElementById('home-button-results');
+
+
+        // Functions to manage screen visibility
+        function showScreen(screenId) {
+            welcomeScreen.classList.add('hidden');
+            chapterSelectionScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // Initialize Chapter Buttons
+        function renderChapterButtons() {
+            chapterButtonsContainer.innerHTML = ''; // Clear previous buttons
+            Object.keys(QUIZ_CHAPTERS).forEach(key => {
+                const button = document.createElement('button');
+                button.className = "w-full py-4 px-6 bg-blue-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mb-4";
+                button.textContent = QUIZ_CHAPTERS[key].title;
+                button.onclick = () => startChapterQuiz(key);
+                chapterButtonsContainer.appendChild(button);
+            });
+        }
+
+        // Handler for starting the quiz journey from welcome screen
+        function proceedToChapterSelection() {
+            showScreen('chapter-selection-screen');
+            renderChapterButtons(); // Render buttons when showing this screen
+        }
+
+        // Handler for selecting a specific chapter quiz
+        function startChapterQuiz(chapterKey) {
+            currentChapterKey = chapterKey;
+            activeQuizQuestions = QUIZ_CHAPTERS[currentChapterKey].questions;
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            feedback = null;
+            answeredQuestions = [];
+            showScreen('quiz-screen');
+            renderQuestion();
+        }
+
+        // Render current question and options
+        function renderQuestion() {
+            const currentQuestion = activeQuizQuestions[currentQuestionIndex];
+            quizTitle.textContent = `${QUIZ_CHAPTERS[currentChapterKey].title}: Question ${currentQuestionIndex + 1} of ${activeQuizQuestions.length}`;
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = ''; // Clear previous options
+            feedbackText.classList.add('hidden'); // Hide feedback
+            nextQuestionButton.disabled = true; // Disable next button
+            nextQuestionButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+            nextQuestionButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full py-3 px-4 rounded-lg text-lg font-medium text-gray-800 transition-colors duration-200 shadow-md mb-3 sm:mb-4 bg-white hover:bg-gray-100 cursor-pointer';
+                button.textContent = option;
+                button.onclick = () => handleOptionSelect(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Handler for option selection
+        function handleOptionSelect(option) {
+            if (selectedOption === null) { // Allow selection only if not already answered
+                selectedOption = option;
+                const currentQuestion = activeQuizQuestions[currentQuestionIndex];
+                const isCorrect = option === currentQuestion.answer;
+
+                // Update feedback
+                feedbackText.textContent = isCorrect ? 'Correct!' : `Incorrect. The answer was: ${currentQuestion.answer}`;
+                feedbackText.classList.remove('hidden');
+                feedbackText.classList.remove('text-green-700', 'text-red-700');
+                feedbackText.classList.add(isCorrect ? 'text-green-700' : 'text-red-700');
+
+                if (isCorrect) {
+                    score++;
+                }
+
+                // Update option button styles
+                Array.from(optionsContainer.children).forEach(button => {
+                    const buttonText = button.textContent;
+                    button.classList.remove('bg-white', 'hover:bg-gray-100', 'cursor-pointer');
+                    button.classList.add('pointer-events-none'); // Disable further clicks
+
+                    if (buttonText === currentQuestion.answer) {
+                        button.classList.add('bg-green-300');
+                    } else if (buttonText === selectedOption) {
+                        button.classList.add('bg-red-300');
+                    } else {
+                        button.classList.add('bg-gray-200');
+                    }
+                });
+
+                // Enable next button
+                nextQuestionButton.disabled = false;
+                nextQuestionButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                nextQuestionButton.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+
+                // Record the answer for results review
+                answeredQuestions.push({
+                    question: currentQuestion.question,
+                    userAnswer: option,
+                    correctAnswer: currentQuestion.answer,
+                    isCorrect: isCorrect
+                });
+            }
+        }
+
+        // Handler for moving to the next question or finishing the quiz
+        function handleNextQuestion() {
+            if (selectedOption !== null) { // Only allow next if an option was selected
+                if (currentQuestionIndex < activeQuizQuestions.length - 1) {
+                    currentQuestionIndex++;
+                    selectedOption = null;
+                    feedback = null;
+                    renderQuestion();
+                } else {
+                    showResults();
+                }
+            }
+        }
+
+        // Show Results Screen
+        function showResults() {
+            showScreen('results-screen');
+            finalScore.textContent = score;
+            totalQuestionsResults.textContent = activeQuizQuestions.length;
+            renderAnswerReview();
+        }
+
+        // Render Answer Review
+        function renderAnswerReview() {
+            answerReviewContainer.innerHTML = ''; // Clear previous review items
+            answeredQuestions.forEach((qa, index) => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-50 p-4 rounded-lg shadow-sm mb-4 border border-gray-200 text-left';
+                let htmlContent = `<p class="font-semibold text-gray-800">Q${index + 1}: ${qa.question}</p>`;
+                htmlContent += `<p class="text-lg ${qa.isCorrect ? 'text-green-600' : 'text-red-600'}">Your Answer: ${qa.userAnswer}</p>`;
+                if (!qa.isCorrect) {
+                    htmlContent += `<p class="text-md text-gray-700">Correct Answer: ${qa.correctAnswer}</p>`;
+                }
+                div.innerHTML = htmlContent;
+                answerReviewContainer.appendChild(div);
+            });
+        }
+
+        // Function to reset state and go to chapter selection
+        function goHome() {
+            currentScreen = 'welcome'; // Go to welcome screen, which then leads to chapter selection
+            currentChapterKey = null;
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            feedback = null;
+            answeredQuestions = [];
+            activeQuizQuestions = [];
+            showScreen('welcome-screen');
+            // Re-render chapter buttons if needed, although welcome leads to chapter selection
+        }
+
+
+        // Event Listeners
+        startQuizButton.addEventListener('click', proceedToChapterSelection);
+        nextQuestionButton.addEventListener('click', handleNextQuestion);
+        backToStartButton.addEventListener('click', () => {
+            showScreen('welcome-screen');
+            // Reset global state for a fresh start
+            currentScreen = 'welcome';
+            currentChapterKey = null;
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            feedback = null;
+            answeredQuestions = [];
+            activeQuizQuestions = [];
+        });
+
+        homeButtonQuiz.addEventListener('click', goHome);
+        homeButtonResults.addEventListener('click', goHome);
+
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('welcome-screen');
+        });
+
+    </script>
+</body>
+</html>
