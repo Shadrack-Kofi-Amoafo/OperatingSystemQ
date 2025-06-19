@@ -13,7 +13,7 @@
         }
         /* Custom styles for scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+            width: 6px; /* Slightly thinner scrollbar */
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -48,24 +48,24 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+<body class="min-h-screen bg-gradient-to-br from-teal-300 to-blue-400 flex items-center justify-center p-2 sm:p-4">
 
-    <div id="app-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl max-w-lg w-full transform transition-all duration-300">
+    <div id="app-container" class="bg-white p-3 sm:p-4 rounded-xl shadow-2xl max-w-sm sm:max-w-md md:max-w-lg w-full transform transition-all duration-300">
 
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="text-center">
-            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 animate-fade-in-down">📚 Operating System Quiz 📚</h1>
-            <p class="text-lg text-gray-700 mb-8 leading-relaxed animate-fade-in">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 animate-fade-in-down">📚 OS Quiz 📚</h1>
+            <p class="text-sm sm:text-base text-gray-700 mb-5 leading-relaxed animate-fade-in">
                 Test your knowledge on Operating Systems with these challenging quizzes!
             </p>
-            <button id="start-quiz-button" class="w-full py-4 px-6 bg-green-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 active:scale-95">
+            <button id="start-quiz-button" class="w-full py-3 px-4 bg-emerald-500 text-white text-base sm:text-lg font-semibold rounded-lg shadow-lg hover:bg-emerald-600 transition-all duration-300 transform hover:scale-105 active:scale-95">
                 Start Quiz
             </button>
         </div>
 
         <!-- Chapter Selection Screen -->
         <div id="chapter-selection-screen" class="text-center hidden">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 animate-fade-in-down">Choose a Chapter</h2>
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 animate-fade-in-down">Choose a Chapter</h2>
             <div id="chapter-buttons">
                 <!-- Chapter buttons will be injected here by JavaScript -->
             </div>
@@ -73,16 +73,16 @@
 
         <!-- Quiz Screen -->
         <div id="quiz-screen" class="hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="quiz-title" class="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-grow">
-                    <!-- Quiz title and question count will be injected here -->
+            <div class="flex justify-between items-center mb-2">
+                <h2 id="quiz-title" class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 text-center flex-grow">
+                    <!-- Question count will be injected here -->
                 </h2>
-                <button id="home-button-quiz" class="ml-4 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-sm">
+                <button id="home-button-quiz" class="ml-2 py-1 px-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-xs">
                     Home
                 </button>
             </div>
-            <div class="bg-gray-50 p-5 rounded-lg shadow-inner mb-6">
-                <p id="question-text" class="text-xl sm:text-2xl text-gray-800 font-semibold leading-relaxed">
+            <div class="bg-blue-50 p-3 rounded-lg shadow-inner mb-3">
+                <p id="question-text" class="text-sm sm:text-base md:text-lg text-gray-800 font-semibold leading-relaxed">
                     <!-- Question text will be injected here -->
                 </p>
             </div>
@@ -91,33 +91,33 @@
                 <!-- Answer options will be injected here by JavaScript -->
             </div>
 
-            <p id="feedback-text" class="text-center text-lg mt-4 font-semibold hidden animate-fade-in">
+            <p id="feedback-text" class="text-center text-sm mt-2 font-semibold hidden animate-fade-in">
                 <!-- Feedback (Correct/Incorrect) will be injected here -->
             </p>
 
-            <button id="next-question-button" class="w-full py-4 px-6 text-xl font-semibold rounded-lg shadow-lg mt-8 transition-all duration-300 transform hover:scale-105 active:scale-95 bg-gray-400 cursor-not-allowed" disabled>
+            <button id="next-question-button" class="w-full py-3 px-4 text-base font-semibold rounded-lg shadow-lg mt-5 transition-all duration-300 transform hover:scale-105 active:scale-95 bg-gray-400 cursor-not-allowed" disabled>
                 Next Question
             </button>
         </div>
 
         <!-- Results Screen -->
         <div id="results-screen" class="text-center hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 animate-fade-in-down flex-grow">🎉 Quiz Completed! 🎉</h2>
-                <button id="home-button-results" class="ml-4 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-sm">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 animate-fade-in-down flex-grow">🎉 Quiz Completed! 🎉</h2>
+                <button id="home-button-results" class="ml-2 py-1 px-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 text-xs">
                     Home
                 </button>
             </div>
-            <p class="text-2xl text-gray-800 mb-6">
-                Your Score: <span id="final-score" class="font-extrabold text-green-600"></span> out of <span id="total-questions-results" class="font-extrabold text-blue-600"></span>
+            <p class="text-lg sm:text-xl text-gray-800 mb-4">
+                Your Score: <span id="final-score" class="font-extrabold text-emerald-600"></span> out of <span id="total-questions-results" class="font-extrabold text-indigo-600"></span>
             </p>
 
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 mt-8">Review Your Answers:</h3>
-            <div id="answer-review-container" class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 mt-5">Review Your Answers:</h3>
+            <div id="answer-review-container" class="max-h-40 sm:max-h-48 overflow-y-auto pr-1 custom-scrollbar">
                 <!-- Answer review items will be injected here by JavaScript -->
             </div>
 
-            <button id="back-to-start-button" class="w-full py-4 px-6 bg-blue-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mt-8">
+            <button id="back-to-start-button" class="w-full py-3 px-4 bg-indigo-500 text-white text-base font-semibold rounded-lg shadow-lg hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mt-5">
                 Back to Start
             </button>
         </div>
@@ -128,7 +128,7 @@
         // Quiz Data organized by Chapters
         const QUIZ_CHAPTERS = {
             chapter1: {
-                title: "Chapter 1: Introduction to Operating Systems",
+                title: "Chapter 1: Intro to OS", // Simplified title for display on chapter select
                 questions: [
                     {
                         question: "What is the primary role of an operating system in relation to computer hardware?",
@@ -534,7 +534,7 @@
                 ]
             },
             chapter2: {
-                title: "Chapter 2: Operating System Structures",
+                title: "Chapter 2: OS Structures", // Simplified title
                 questions: [
                     {
                         question: "What is the primary purpose of operating system services, as stated in the text?",
@@ -939,7 +939,7 @@
                 ]
             },
             chapter2_part2: {
-                title: "Chapter 2 Part 2: Process Management",
+                title: "Chapter 2 Part 2: Process Mgmt & Scheduling", // Simplified title
                 questions: [
                     {
                         question: "Informally, what is a process?",
@@ -1390,8 +1390,8 @@
             chapterButtonsContainer.innerHTML = ''; // Clear previous buttons
             Object.keys(QUIZ_CHAPTERS).forEach(key => {
                 const button = document.createElement('button');
-                button.className = "w-full py-4 px-6 bg-blue-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mb-4";
-                button.textContent = QUIZ_CHAPTERS[key].title;
+                button.className = "w-full py-3 px-4 bg-indigo-500 text-white text-base font-semibold rounded-lg shadow-lg hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105 active:scale-95 mb-3"; // Adjusted classes
+                button.textContent = QUIZ_CHAPTERS[key].title; // Use simplified title
                 button.onclick = () => startChapterQuiz(key);
                 chapterButtonsContainer.appendChild(button);
             });
@@ -1419,17 +1419,18 @@
         // Render current question and options
         function renderQuestion() {
             const currentQuestion = activeQuizQuestions[currentQuestionIndex];
-            quizTitle.textContent = `${QUIZ_CHAPTERS[currentChapterKey].title}: Question ${currentQuestionIndex + 1} of ${activeQuizQuestions.length}`;
+            // Only show question count, not chapter title
+            quizTitle.textContent = `Question ${currentQuestionIndex + 1} of ${activeQuizQuestions.length}`;
             questionText.textContent = currentQuestion.question;
             optionsContainer.innerHTML = ''; // Clear previous options
             feedbackText.classList.add('hidden'); // Hide feedback
             nextQuestionButton.disabled = true; // Disable next button
-            nextQuestionButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+            nextQuestionButton.classList.remove('bg-indigo-500', 'text-white', 'hover:bg-indigo-600'); // Removed old classes
             nextQuestionButton.classList.add('bg-gray-400', 'cursor-not-allowed');
 
             currentQuestion.options.forEach((option, index) => {
                 const button = document.createElement('button');
-                button.className = 'w-full py-3 px-4 rounded-lg text-lg font-medium text-gray-800 transition-colors duration-200 shadow-md mb-3 sm:mb-4 bg-white hover:bg-gray-100 cursor-pointer';
+                button.className = 'w-full py-2 px-3 rounded-lg text-sm font-medium text-gray-800 transition-colors duration-200 shadow-md mb-2 bg-gray-100 hover:bg-gray-200 cursor-pointer'; // Further adjusted classes
                 button.textContent = option;
                 button.onclick = () => handleOptionSelect(option);
                 optionsContainer.appendChild(button);
@@ -1456,7 +1457,7 @@
                 // Update option button styles
                 Array.from(optionsContainer.children).forEach(button => {
                     const buttonText = button.textContent;
-                    button.classList.remove('bg-white', 'hover:bg-gray-100', 'cursor-pointer');
+                    button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'cursor-pointer'); // Removed old classes
                     button.classList.add('pointer-events-none'); // Disable further clicks
 
                     if (buttonText === currentQuestion.answer) {
@@ -1471,7 +1472,7 @@
                 // Enable next button
                 nextQuestionButton.disabled = false;
                 nextQuestionButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                nextQuestionButton.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                nextQuestionButton.classList.add('bg-indigo-500', 'text-white', 'hover:bg-indigo-600');
 
                 // Record the answer for results review
                 answeredQuestions.push({
@@ -1510,11 +1511,11 @@
             answerReviewContainer.innerHTML = ''; // Clear previous review items
             answeredQuestions.forEach((qa, index) => {
                 const div = document.createElement('div');
-                div.className = 'bg-gray-50 p-4 rounded-lg shadow-sm mb-4 border border-gray-200 text-left';
-                let htmlContent = `<p class="font-semibold text-gray-800">Q${index + 1}: ${qa.question}</p>`;
-                htmlContent += `<p class="text-lg ${qa.isCorrect ? 'text-green-600' : 'text-red-600'}">Your Answer: ${qa.userAnswer}</p>`;
+                div.className = 'bg-blue-50 p-2 rounded-lg shadow-sm mb-2 border border-gray-200 text-left'; // Adjusted classes to blue-50
+                let htmlContent = `<p class="font-semibold text-gray-800 text-xs sm:text-sm">Q${index + 1}: ${qa.question}</p>`; // Adjusted font size
+                htmlContent += `<p class="text-xs sm:text-base ${qa.isCorrect ? 'text-green-600' : 'text-red-600'}">Your Answer: ${qa.userAnswer}</p>`; // Adjusted font size
                 if (!qa.isCorrect) {
-                    htmlContent += `<p class="text-md text-gray-700">Correct Answer: ${qa.correctAnswer}</p>`;
+                    htmlContent += `<p class="text-xs text-gray-700">Correct Answer: ${qa.correctAnswer}</p>`; // Adjusted font size
                 }
                 div.innerHTML = htmlContent;
                 answerReviewContainer.appendChild(div);
